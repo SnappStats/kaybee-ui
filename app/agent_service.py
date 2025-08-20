@@ -1,6 +1,7 @@
 import os
 import requests
 from dotenv import load_dotenv
+from floggit import flog
 
 # Load environment variables from .env file
 load_dotenv()
@@ -8,6 +9,7 @@ load_dotenv()
 AGENT_URL = os.environ['AGENT_URL']
 APP_NAME = os.environ['APP_NAME']
 
+@flog
 def get_agent_response(
         user_input: str, user_id: str, session_id: str) -> dict:
     url = f'{AGENT_URL}/run'
@@ -23,9 +25,10 @@ def get_agent_response(
     return requests.post(url, json=payload).json()
 
 
-def create_session(user_id: str) -> str:
+@flog
+def create_session(user_id: str, company: str) -> str:
     url = f'{AGENT_URL}/apps/{APP_NAME}/users/{user_id}/sessions'
-    response = requests.post(url)
+    response = requests.post(url, json={"company": company})
     return response.json()['id']
 
 

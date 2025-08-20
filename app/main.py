@@ -9,7 +9,6 @@ if 'session_id' not in st.session_state:
     company = 'Apple'
     st.session_state.session_id = create_session(
             st.session_state.user_id, company)
-    st.session_state.session_id
 
 if 'messages' not in st.session_state:
     st.session_state.messages = []

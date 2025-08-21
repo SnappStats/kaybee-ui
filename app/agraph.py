@@ -1,25 +1,20 @@
+from knowledge_graph_service import fetch_knowledge_graph
 from streamlit_agraph import agraph, Node, Edge, Config
 
-def get_graph():
+def get_agraph():
+    kg = fetch_knowledge_graph()
     nodes = []
     edges = []
-    nodes.append( Node(id="Spiderman", 
-                       label="Peter Parker", 
-                       size=25, 
-                       shape="circularImage",
-                       image="http://marvel-force-chart.surge.sh/marvel_force_chart_img/top_spiderman.png") 
-                ) # includes **kwargs
-    nodes.append( Node(id="Captain_Marvel", 
-                       size=25,
-                       shape="circularImage",
-                       image="http://marvel-force-chart.surge.sh/marvel_force_chart_img/top_captainmarvel.png") 
-                )
-    edges.append( Edge(source="Captain_Marvel", 
-                       label="friend_of", 
-                       target="Spiderman", 
-                       # **kwargs
-                       ) 
-                ) 
+
+    for k, v in kg['entities'].items():
+        nodes.append(Node(id=v['entity_id'], 
+                          label=v['entity_names'][0], 
+                          size=10,
+                          shape='dot'))
+    for e in kg['relationships']:
+        edges.append(Edge(source=e['source_entity_id'], 
+                          label=e['relationship'], 
+                          target=e['target_entity_id']))
 
     config = Config(width=750,
                     height=450,

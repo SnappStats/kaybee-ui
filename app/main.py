@@ -2,7 +2,7 @@ import streamlit as st
 from streamlit_extras.bottom_container import bottom
 import streamlit_mermaid as stmd
 from agent_service import get_agent_response, create_session
-from agraph import get_graph
+from agraph import get_agraph
 
 AI_AVATAR = 'app/splash.png'
 USER_AVATAR = '🧑'
@@ -60,7 +60,7 @@ with column1:
                                         {"role": "assistant", "content": text})
 with column2:
     with st.container():
-        if agraph_clicked := get_graph():
+        if agraph_clicked := get_agraph():
             agraph_clicked
         #stmd.st_mermaid('''
         #graph TD;

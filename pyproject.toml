@@ -10,5 +10,6 @@ dependencies = [
     "python-dotenv>=1.1.1",
     "requests>=2.32.4",
     "streamlit>=1.48.0",
+    "streamlit-extras>=0.7.6",
     "streamlit-mermaid>=0.3.0",
 ]

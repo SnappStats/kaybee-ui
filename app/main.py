@@ -46,9 +46,10 @@ with column1:
                 # Display a loading message while waiting for the response
                 with st.spinner("Thinking..."):
                     agent_response = get_agent_response(
-                            user_input=st.session_state.user_input.text,
                             user_id=st.session_state.user_id,
-                            session_id=st.session_state.session_id)
+                            session_id=st.session_state.session_id,
+                            text=st.session_state.user_input.text,
+                            files=st.session_state.user_input.files)
                     if agent_response.status_code != 200:
                         st.error(agent_response.json())
                     else:
@@ -65,7 +66,7 @@ with column1:
 with column2:
     with st.container():
         if agraph_clicked := get_agraph():
-            agraph_clicked
+            st.session_state.agraph_clicked = agraph_clicked
         #stmd.st_mermaid('''
         #graph TD;
         #    A[User] -->|Ask question| B[Kaybee Agent];

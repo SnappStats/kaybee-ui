@@ -9,8 +9,9 @@ def get_agraph():
     for k, v in kg['entities'].items():
         nodes.append(Node(id=v['entity_id'], 
                           label=v['entity_names'][0], 
+                          title=', '.join(v['entity_names']), 
                           size=10,
-                          shape='dot'))
+                          shape='box'))
     for e in kg['relationships']:
         edges.append(Edge(source=e['source_entity_id'], 
                           label=e['relationship'], 

@@ -1,3 +1,4 @@
+import base64
 import os
 import requests
 from dotenv import load_dotenv
@@ -11,16 +12,31 @@ APP_NAME = os.environ['APP_NAME']
 
 @flog
 def get_agent_response(
-        user_input: str, user_id: str, session_id: str) -> dict:
+        user_id: str,
+        session_id: str,
+        text: str = '',
+        files: list = []) -> dict:
     url = f'{AGENT_URL}/run'
+
+    parts = [{"text": text}]
+    if files:
+        file_bytes = files[0].read()
+        encoded_data = base64.b64encode(file_bytes).decode('utf-8')
+        parts.append(
+            {
+                'inlineData': {
+                    'displayName': files[0].name,
+                    'data': encoded_data,
+                    'mimeType': files[0].type
+                }
+            }
+        )
+
     payload = {
         "app_name": APP_NAME,
         "user_id": user_id,
         "session_id": session_id,
-        "new_message": {
-            "parts": [{"text": user_input}],
-            "role": "user"
-        },
+        "new_message": {"parts": parts, "role": "user"},
     }
     return requests.post(url, json=payload)
 

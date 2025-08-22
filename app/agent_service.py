@@ -22,7 +22,7 @@ def get_agent_response(
             "role": "user"
         },
     }
-    return requests.post(url, json=payload).json()
+    return requests.post(url, json=payload)
 
 
 @flog

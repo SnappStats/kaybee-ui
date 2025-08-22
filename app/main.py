@@ -45,19 +45,23 @@ with column1:
             with st.chat_message("assistant", avatar=AI_AVATAR):
                 # Display a loading message while waiting for the response
                 with st.spinner("Thinking..."):
-                    for item in get_agent_response(
+                    agent_response = get_agent_response(
                             user_input=st.session_state.user_input.text,
                             user_id=st.session_state.user_id,
-                            session_id=st.session_state.session_id):
-                        for part in item['content'].get('parts', []):
-                            if text := part.get('text'):
-                                if part.get('thought'):
-                                    text = '**Thought:**\n\n' + text
-                                    st.caption(text)
-                                else:
-                                    st.markdown(text)
-                                    st.session_state.messages.append(
-                                        {"role": "assistant", "content": text})
+                            session_id=st.session_state.session_id)
+                    if agent_response.status_code != 200:
+                        st.error(agent_response.json())
+                    else:
+                        for item in agent_response.json():
+                            for part in item['content'].get('parts', []):
+                                if text := part.get('text'):
+                                    if part.get('thought'):
+                                        text = '**Thought:**\n\n' + text
+                                        st.caption(text)
+                                    else:
+                                        st.markdown(text)
+                                        st.session_state.messages.append(
+                                            {"role": "assistant", "content": text})
 with column2:
     with st.container():
         if agraph_clicked := get_agraph():

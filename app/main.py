@@ -1,5 +1,4 @@
 import streamlit as st
-from streamlit_extras.bottom_container import bottom
 import streamlit_mermaid as stmd
 from agent_service import get_agent_response, create_session
 from agraph import get_agraph
@@ -18,7 +17,10 @@ if 'session_id' not in st.session_state:
 if 'messages' not in st.session_state:
     st.session_state.messages = []
 
-st.set_page_config(page_title='Kaybee', page_icon='app/splash.png')
+st.set_page_config(
+        page_title='Kaybee',
+        page_icon='app/splash.png',
+        layout='wide')
 st.logo('app/bee.png', size='large', link=None)
 title_col1, title_col2 = st.columns([1, 3], gap='small')
 with title_col1:
@@ -63,6 +65,12 @@ with column1:
                                         st.markdown(text)
                                         st.session_state.messages.append(
                                             {"role": "assistant", "content": text})
+    with st.container():
+        st.chat_input(
+                'Teach me something...',
+                key='user_input',
+                accept_file=True,
+                file_type=['pdf'])
 with column2:
     with st.container():
         if agraph_clicked := get_agraph():
@@ -74,10 +82,3 @@ with column2:
         #    C -->|Return data| B;
         #    B -->|Respond| A;
         #''')
-
-with bottom():
-    st.chat_input(
-            'Teach me something...',
-            key='user_input',
-            accept_file=True,
-            file_type=['pdf'])

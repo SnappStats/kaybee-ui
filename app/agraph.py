@@ -1,8 +1,8 @@
 from knowledge_graph_service import fetch_knowledge_graph
 from streamlit_agraph import agraph, Node, Edge, Config
 
-def get_agraph():
-    kg = fetch_knowledge_graph()
+def get_agraph(graph_id: str):
+    kg = fetch_knowledge_graph(graph_id)
     nodes = []
     edges = []
 

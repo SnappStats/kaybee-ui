@@ -9,8 +9,9 @@ storage_client = storage.Client()
 KNOWLEDGE_GRAPH_BUCKET = storage_client.get_bucket(
         os.environ["KNOWLEDGE_GRAPH_BUCKET"])
 
-def fetch_knowledge_graph() -> dict:
-    return json.loads(
-            KNOWLEDGE_GRAPH_BUCKET.get_blob("knowledge_graph.json")\
-                    .download_as_text(encoding="utf-8")
-    )
+def fetch_knowledge_graph(graph_id: str) -> dict:
+    blob = KNOWLEDGE_GRAPH_BUCKET.blob(f"{graph_id}.json")
+    if not blob.exists():
+        return {'entities': {}, 'relationships': []}
+    else:
+        return json.loads(blob.download_as_text(encoding='utf-8'))

@@ -7,9 +7,8 @@ from google.cloud import secretmanager
 
 dotenv.load_dotenv()
 
-client = secretmanager.SecretManagerServiceClient()
-
 def main():
+    client = secretmanager.SecretManagerServiceClient()
     response = client.access_secret_version(
             request={"name": os.environ['OAUTH_SECRET_NAME']})
 

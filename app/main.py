@@ -1,44 +1,45 @@
 import os
 import streamlit as st
 import streamlit_mermaid as stmd
-from agent_service import get_agent_response, create_session
-from agraph import get_agraph
 from oauth_secrets import main as load_oauth_secrets
 
 if not os.path.exists('app/.streamlit/secrets.toml'):
     load_oauth_secrets()
-
-if not st.user.is_logged_in:
-    st.session_state.user_id = 'default'
-    if st.button("Log in with Google"):
-        st.login('google')
-else:
-    st.session_state.user_id = st.user.sub
-    st.write(f"Hello, {st.user.name}!")
-    if st.button("Log out"):
-        st.logout()
-
-AI_AVATAR = 'app/splash.png'
-USER_AVATAR = '🧑'
-
-if 'session_id' not in st.session_state:
-    company = 'Apple'
-    st.session_state.session_id = create_session(
-            st.session_state.user_id, company)
-
-if 'messages' not in st.session_state:
-    st.session_state.messages = []
 
 st.set_page_config(
         page_title='Kaybee',
         page_icon='app/splash.png',
         layout='wide')
 st.logo('app/bee.png', size='large', link=None)
-title_col1, title_col2 = st.columns([1, 3], gap='small')
-with title_col1:
-    st.image('app/bee.png', width=200)
-with title_col2:
-    st.title('Tribal Knowledge Base')
+
+# --- User and Session Management ---
+if getattr(st.user, 'is_logged_in', False):
+    st.session_state.user_id = st.user.sub
+    company = 'Apple' # Assuming logged-in users are from Apple
+    with st.sidebar:
+        st.write(f"Hello, {st.user.name}!")
+        if st.button("Log out"):
+            st.logout()
+else:
+    st.session_state.user_id = 'default'
+    company = 'Anonymous'
+    with st.sidebar:
+        if st.button("Log in with Google"):
+            st.login('google')
+
+if 'session_id' not in st.session_state:
+    from agent_service import create_session
+    st.session_state.session_id = create_session(
+            st.session_state.user_id, company)
+
+# --- Main Application UI ---
+st.markdown('<h1 style="margin-top: 0rem; padding-top: 0rem">Tribal Knowledge Base</h1>', unsafe_allow_html=True)
+
+AI_AVATAR = 'app/splash.png'
+USER_AVATAR = '🧑'
+
+if 'messages' not in st.session_state:
+    st.session_state.messages = []
 
 column1, column2 = st.columns([1,2])
 with column1:
@@ -57,8 +58,8 @@ with column1:
                 st.session_state.messages.append(
                     {"role": "user", "content": st.session_state.user_input.text})
             with st.chat_message("assistant", avatar=AI_AVATAR):
-                # Display a loading message while waiting for the response
                 with st.spinner("Thinking..."):
+                    from agent_service import get_agent_response
                     agent_response = get_agent_response(
                             user_id=st.session_state.user_id,
                             session_id=st.session_state.session_id,
@@ -85,12 +86,6 @@ with column1:
                 file_type=['pdf'])
 with column2:
     with st.container():
+        from agraph import get_agraph
         if agraph_clicked := get_agraph(graph_id=st.session_state.user_id):
             st.session_state.agraph_clicked = agraph_clicked
-        #stmd.st_mermaid('''
-        #graph TD;
-        #    A[User] -->|Ask question| B[Kaybee Agent];
-        #    B -->|Fetch data| C[Weather API];
-        #    C -->|Return data| B;
-        #    B -->|Respond| A;
-        #''')

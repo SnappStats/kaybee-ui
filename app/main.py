@@ -69,7 +69,7 @@ with column1:
                         st.error(agent_response.json())
                     else:
                         for item in agent_response.json():
-                            for part in item['content'].get('parts', []):
+                            for part in item.get('content',{}).get('parts', []):
                                 if text := part.get('text'):
                                     if part.get('thought'):
                                         text = '**Thought:**\n\n' + text

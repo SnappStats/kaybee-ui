@@ -17,4 +17,5 @@ dependencies = [
     "streamlit-google-auth>=1.1.8",
     "streamlit-mermaid>=0.3.0",
     "toml>=0.10.2",
+    "sseclient-py>=1.8.0",
 ]

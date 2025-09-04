@@ -2,7 +2,8 @@ import os
 import streamlit as st
 import streamlit_mermaid as stmd
 from oauth_secrets import main as load_oauth_secrets
-from agent_service import get_agent_response
+from agent_service import stream_agent_response
+
 
 if not os.path.exists('app/.streamlit/secrets.toml'):
     load_oauth_secrets()
@@ -39,6 +40,19 @@ st.markdown('<h1 style="margin-top: 0rem; padding-top: 0rem">Tribal Knowledge Ba
 AI_AVATAR = 'app/splash.png'
 USER_AVATAR = '🧑'
 
+
+def format_response(snippet: dict):
+    for item in snippet:
+        for part in item.get('content',{}).get('parts', []):
+            if text := part.get('text'):
+                if part.get('thought'):
+                    text = '**Thought:**\n\n' + text
+                    st.caption(text)
+                else:
+                    st.markdown(text)
+                    st.session_state.messages.append(
+                        {"role": "assistant", "content": text})
+
 if 'messages' not in st.session_state:
     st.session_state.messages = []
 
@@ -60,7 +74,7 @@ with column1:
                     {"role": "user", "content": st.session_state.user_input.text})
             with st.chat_message("assistant", avatar=AI_AVATAR):
                 with st.spinner("Thinking..."):
-                    agent_response = get_agent_response(
+                    agent_response = stream_agent_response(
                             user_id=st.session_state.user_id,
                             session_id=st.session_state.session_id,
                             text=st.session_state.user_input.text,
@@ -68,18 +82,8 @@ with column1:
                     if 0 and agent_response.status_code != 200:
                         st.error(agent_response.json())
                     else:
-                        st.write_stream(agent_response)
+                        st.write_stream(format_response(agent_response))
                         '''
-                        for item in agent_response.json():
-                            for part in item.get('content',{}).get('parts', []):
-                                if text := part.get('text'):
-                                    if part.get('thought'):
-                                        text = '**Thought:**\n\n' + text
-                                        st.caption(text)
-                                    else:
-                                        st.markdown(text)
-                                        st.session_state.messages.append(
-                                            {"role": "assistant", "content": text})
                         '''
     with st.container():
         st.chat_input(

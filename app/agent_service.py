@@ -1,8 +1,10 @@
 import base64
+import json
 import os
 import requests
 from dotenv import load_dotenv
 from floggit import flog
+import sseclient
 
 # Load environment variables from .env file
 load_dotenv()
@@ -11,7 +13,7 @@ AGENT_URL = os.environ['AGENT_URL']
 APP_NAME = os.environ['APP_NAME']
 
 @flog
-def get_agent_response(
+def stream_agent_response(
         user_id: str,
         session_id: str,
         text: str = '',
@@ -39,9 +41,11 @@ def get_agent_response(
         "new_message": {"parts": parts, "role": "user"},
         'streaming': True
     }
-    response = requests.post(url, stream=True, json=payload)
-    for asdf in response:
-        yield asdf
+
+    headers = {'Accept': 'text/event-stream'}
+    response = requests.post(url, headers=headers, stream=True, json=payload)
+    for snippet in sseclient.SSEClient(response).events():
+        yield json.loads(snippet.data)
 
 
 @flog
@@ -49,20 +53,3 @@ def create_session(user_id: str, company: str) -> str:
     url = f'{AGENT_URL}/apps/{APP_NAME}/users/{user_id}/sessions'
     response = requests.post(url, json={"company": company})
     return response.json()['id']
-
-
-def stream_agent_response(
-        user_input: str, user_id: str, session_id: str) -> dict:
-    url = f'{AGENT_URL}/run_sse'
-    payload = {
-        "appName": APP_NAME,
-        "userId": user_id,
-        "sessionId": session_id,
-        "newMessage": {
-            "parts": [{"text": user_input}],
-            "role": "user"
-        },
-        "streaming": False
-    }
-    for e in requests.post(url, json=payload):
-        yield e

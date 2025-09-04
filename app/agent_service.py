@@ -16,7 +16,7 @@ def get_agent_response(
         session_id: str,
         text: str = '',
         files: list = []) -> dict:
-    url = f'{AGENT_URL}/run'
+    url = f'{AGENT_URL}/run_sse'
 
     parts = [{"text": text}]
     if files:
@@ -37,8 +37,11 @@ def get_agent_response(
         "user_id": user_id,
         "session_id": session_id,
         "new_message": {"parts": parts, "role": "user"},
+        'streaming': True
     }
-    return requests.post(url, json=payload)
+    response = requests.post(url, stream=True, json=payload)
+    for asdf in response:
+        yield asdf
 
 
 @flog

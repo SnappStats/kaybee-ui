@@ -2,6 +2,7 @@ import os
 import streamlit as st
 import streamlit_mermaid as stmd
 from oauth_secrets import main as load_oauth_secrets
+from agent_service import get_agent_response
 
 if not os.path.exists('app/.streamlit/secrets.toml'):
     load_oauth_secrets()
@@ -59,15 +60,16 @@ with column1:
                     {"role": "user", "content": st.session_state.user_input.text})
             with st.chat_message("assistant", avatar=AI_AVATAR):
                 with st.spinner("Thinking..."):
-                    from agent_service import get_agent_response
                     agent_response = get_agent_response(
                             user_id=st.session_state.user_id,
                             session_id=st.session_state.session_id,
                             text=st.session_state.user_input.text,
                             files=st.session_state.user_input.files)
-                    if agent_response.status_code != 200:
+                    if 0 and agent_response.status_code != 200:
                         st.error(agent_response.json())
                     else:
+                        st.write_stream(agent_response)
+                        '''
                         for item in agent_response.json():
                             for part in item.get('content',{}).get('parts', []):
                                 if text := part.get('text'):
@@ -78,6 +80,7 @@ with column1:
                                         st.markdown(text)
                                         st.session_state.messages.append(
                                             {"role": "assistant", "content": text})
+                        '''
     with st.container():
         st.chat_input(
                 'Teach me something...',

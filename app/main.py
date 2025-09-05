@@ -79,12 +79,8 @@ with column1:
                             session_id=st.session_state.session_id,
                             text=st.session_state.user_input.text,
                             files=st.session_state.user_input.files)
-                    if 0 and agent_response.status_code != 200:
-                        st.error(agent_response.json())
-                    else:
-                        st.write_stream(format_response(agent_response))
-                        '''
-                        '''
+                    format_response(agent_response)
+
     with st.container():
         st.chat_input(
                 'Teach me something...',

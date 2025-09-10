@@ -11,15 +11,24 @@ def get_agraph(graph_id: str):
         if properties := entity.get('properties'):
             title += '\n' + '\n'.join(f'{k}: {v}' for k, v in properties.items())
 
-        nodes.append(Node(id=entity['entity_id'], 
-                          label=entity['entity_names'][0], 
-                          title=title,
-                          size=10,
-                          shape='box'))
+        nodes.append(
+                Node(
+                    id=entity['entity_id'], 
+                    label=entity['entity_names'][0], 
+                    title=title,
+                    size=10,
+                    shape='box',
+                    shadow=True
+                ))
     for rel in g['relationships']:
-        edges.append(Edge(source=rel['source_entity_id'], 
-                          label=rel['relationship'], 
-                          target=rel['target_entity_id']))
+        edges.append(
+                Edge(
+                    source=rel['source_entity_id'], 
+                    label=rel['relationship'], 
+                    target=rel['target_entity_id'],
+                    smooth=True,
+                    shadow=True
+                ))
 
     config = Config(width=750,
                     height=450,

@@ -60,7 +60,7 @@ if 'messages' not in st.session_state:
 with st.container(border=False):
     column1, column2 = st.columns([1,2], border=True)
     with column1:
-        with st.container(height='stretch'):
+        with st.container(height=500, border=False):
             st.write(' ')
             for message in st.session_state.messages:
                 if message['role'] == 'user':

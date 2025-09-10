@@ -32,7 +32,7 @@ def get_agraph(graph_id: str):
                 ))
 
     config = Config(
-            height=500,
+            height=550,
             directed=True, 
             physics=True, 
             hierarchical=False,

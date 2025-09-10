@@ -31,13 +31,13 @@ def get_agraph(graph_id: str):
                     shadow=True
                 ))
 
-    config = Config(width=750,
-                    height=450,
-                    directed=True, 
-                    physics=True, 
-                    hierarchical=False,
-                    # **kwargs
-                    )
+    config = Config(
+            height=500,
+            directed=True, 
+            physics=True, 
+            hierarchical=False,
+            # **kwargs
+    )
 
     return agraph(nodes=nodes, edges=edges, config=config)
 

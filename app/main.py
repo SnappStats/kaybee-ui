@@ -1,3 +1,4 @@
+import json
 import os
 import streamlit as st
 import streamlit_mermaid as stmd
@@ -44,15 +45,25 @@ USER_AVATAR = '🧑'
 
 def format_response(snippet: dict):
     for item in snippet:
-        for part in item.get('content',{}).get('parts', []):
+        if item.get('partial'):
+            continue
+        if not (parts := item.get('content', {}).get('parts', [])):
+            continue
+        for part in parts:
             if text := part.get('text'):
                 if part.get('thought'):
-                    text = '**Thought:**\n\n' + text
+                    if author := item.get('author'):
+                        st.caption(f"[{author}]")
                     st.caption(text)
                 else:
-                    st.markdown(text)
-                    st.session_state.messages.append(
-                        {"role": "assistant", "content": text})
+                    try:
+                        json.loads(text)
+                    except:
+                        if author := item.get('author'):
+                            st.write(f"[{author}]")
+                        st.markdown(text)
+                        st.session_state.messages.append(
+                            {"role": "assistant", "content": text})
 
 if 'messages' not in st.session_state:
     st.session_state.messages = []

@@ -1,6 +1,15 @@
+import datetime as dt
 from knowledge_graph_service import fetch_knowledge_graph
 from streamlit_agraph import agraph, Node, Edge, Config
 import textwrap
+
+def _is_recent(updated_at: str, threshold_minutes: int = 120) -> bool:
+    updated_at = updated_at or ''
+    recent_datetime = (
+            dt.datetime.utcnow() - dt.timedelta(minutes=threshold_minutes)
+    ).isoformat(timespec='seconds')
+    return updated_at >= recent_datetime
+
 
 def get_agraph(graph_id: str):
     g = fetch_knowledge_graph(graph_id)
@@ -18,6 +27,7 @@ def get_agraph(graph_id: str):
                     label=_wrap_text(entity['entity_names'][0]), 
                     title=title,
                     size=10,
+                    color='#FFA500' if _is_recent(entity.get('updated_at')) else '#2B7CE9',
                     shape='box',
                     shadow=True
                 ))

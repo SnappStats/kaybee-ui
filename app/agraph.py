@@ -3,13 +3,31 @@ from knowledge_graph_service import fetch_knowledge_graph
 from streamlit_agraph import agraph, Node, Edge, Config
 import textwrap
 
-def _is_recent(updated_at: str, threshold_minutes: int = 120) -> bool:
+def _is_recent(updated_at: str, threshold_minutes: int = 2) -> bool:
     updated_at = updated_at or ''
     recent_datetime = (
             dt.datetime.utcnow() - dt.timedelta(minutes=threshold_minutes)
     ).isoformat(timespec='seconds')
     return updated_at >= recent_datetime
 
+
+COLOR = {
+    'border': '#2B7CE9',
+    'background': '#D2E5FF',
+    'highlight': {
+        'border': '#2B7CE9',
+        'background': '#D2E5FF',
+    },
+}
+
+RECENT_COLOR = {
+    'border': '#FFA500',
+    'background': '#FFF5E5',
+    'highlight': {
+        'border': '#FFA500',
+        'background': '#FFF5E5',
+    },
+}
 
 def get_agraph(graph_id: str):
     g = fetch_knowledge_graph(graph_id)
@@ -27,7 +45,7 @@ def get_agraph(graph_id: str):
                     label=_wrap_text(entity['entity_names'][0]), 
                     title=title,
                     size=10,
-                    color='#FFA500' if _is_recent(entity.get('updated_at')) else '#2B7CE9',
+                    color=RECENT_COLOR if _is_recent(entity.get('updated_at')) else COLOR,
                     shape='box',
                     shadow=True
                 ))
@@ -37,8 +55,10 @@ def get_agraph(graph_id: str):
                     source=rel['source_entity_id'], 
                     label=rel['relationship'], 
                     target=rel['target_entity_id'],
+                    color={'inherit': True},
                     smooth=True,
-                    shadow=True
+                    shadow=True,
+                    width=2
                 ))
 
     config = Config(

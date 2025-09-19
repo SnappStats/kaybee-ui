@@ -5,6 +5,7 @@ import streamlit_mermaid as stmd
 from oauth_secrets import main as load_oauth_secrets
 from agent_service import stream_agent_response
 from agraph import get_agraph
+from knowledge_graph_service import fetch_entity
 
 
 if not os.path.exists('app/.streamlit/secrets.toml'):
@@ -25,7 +26,7 @@ if getattr(st.user, 'is_logged_in', False):
         if st.button("Log out"):
             st.logout()
 else:
-    st.session_state.user_id = 'default'
+    st.session_state.user_id = 'anonymous'
     company = 'Anonymous'
     with st.sidebar:
         if st.button("Log in with Google"):
@@ -35,6 +36,10 @@ if 'session_id' not in st.session_state:
     from agent_service import create_session
     st.session_state.session_id = create_session(
             st.session_state.user_id, company)
+
+
+if 'agraph_clicked' not in st.session_state:
+    st.session_state.agraph_clicked = None
 
 # --- Main Application UI ---
 st.markdown('<h1 style="margin-top: 0rem; padding-top: 0rem">Tribal Knowledge Base</h1>', unsafe_allow_html=True)
@@ -69,8 +74,8 @@ if 'messages' not in st.session_state:
     st.session_state.messages = []
 
 with st.container(border=False):
-    column1, column2 = st.columns([1,2], border=True)
-    with column1:
+    colAI, colGraph, colDetails = st.columns([1,2,1], border=True)
+    with colAI:
         with st.container(height=500, border=False):
             st.write(' ')
             for message in st.session_state.messages:
@@ -101,7 +106,14 @@ with st.container(border=False):
                     key='user_input',
                     accept_file=True,
                     file_type=['pdf'])
-    with column2:
+    with colGraph:
         with st.container():
             if agraph_clicked := get_agraph(graph_id=st.session_state.user_id):
                 st.session_state.agraph_clicked = agraph_clicked
+
+    with colDetails:
+        st.session_state.agraph_clicked
+        if st.session_state.agraph_clicked:
+            st.json(fetch_entity(
+                    graph_id=st.session_state.user_id,
+                    entity_id=st.session_state.agraph_clicked))

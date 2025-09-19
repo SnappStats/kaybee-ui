@@ -15,3 +15,7 @@ def fetch_knowledge_graph(graph_id: str) -> dict:
         return {'entities': {}, 'relationships': []}
     else:
         return json.loads(blob.download_as_text(encoding='utf-8'))
+
+def fetch_entity(graph_id: str, entity_id: str) -> dict:
+    graph = fetch_knowledge_graph(graph_id)
+    return graph['entities'].get(entity_id, {})

@@ -112,7 +112,6 @@ with st.container(border=False):
                 st.session_state.agraph_clicked = agraph_clicked
 
     with colDetails:
-        st.session_state.agraph_clicked
         if st.session_state.agraph_clicked:
             st.json(fetch_entity(
                     graph_id=st.session_state.user_id,

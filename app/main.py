@@ -6,7 +6,19 @@ from oauth_secrets import main as load_oauth_secrets
 from agent_service import stream_agent_response
 from agraph import get_agraph
 from knowledge_graph_service import fetch_entity
+from stt import transcribe_audio
 
+def handle_chat_input():
+    st.session_state.user_input = {
+            'text': st.session_state.chat_input.text,
+            'files': st.session_state.chat_input.files
+    }
+
+def handle_audio_input():
+    st.session_state.user_input = {
+            'text': transcribe_audio(st.session_state.audio_input.getvalue()),
+            'files': []
+    }
 
 if not os.path.exists('app/.streamlit/secrets.toml'):
     load_oauth_secrets()
@@ -77,7 +89,7 @@ with st.container(border=False):
     colAI, colGraph, colDetails = st.columns([1,2,1], border=True)
     with colAI:
         with st.container(height=500, border=False):
-            st.write(' ')
+            #st.write(' ')
             for message in st.session_state.messages:
                 if message['role'] == 'user':
                     with st.chat_message("user", avatar=USER_AVATAR):
@@ -86,26 +98,34 @@ with st.container(border=False):
                     with st.chat_message("assistant", avatar=AI_AVATAR):
                         st.markdown(message['content'])
 
-            if st.session_state.get('user_input'):
+            if user_input := st.session_state.get('user_input'):
                 with st.chat_message("user", avatar=USER_AVATAR):
-                    st.markdown(st.session_state.user_input.text)
+                    st.markdown(user_input['text'])
                     st.session_state.messages.append(
-                        {"role": "user", "content": st.session_state.user_input.text})
+                        {"role": "user", "content": user_input['text']})
                 with st.chat_message("assistant", avatar=AI_AVATAR):
                     with st.spinner("Thinking..."):
                         agent_response = stream_agent_response(
                                 user_id=st.session_state.user_id,
                                 session_id=st.session_state.session_id,
-                                text=st.session_state.user_input.text,
-                                files=st.session_state.user_input.files)
+                                text=user_input['text'],
+                                files=user_input['files'])
                         format_response(agent_response)
 
         with st.container():
-            st.chat_input(
+            if st.toggle('🎤', value=False):
+                st.audio_input(
+                    'voice',
+                    label_visibility='collapsed',
+                    on_change=handle_audio_input,
+                    key='audio_input')
+            else:
+                st.chat_input(
                     'Teach me something...',
-                    key='user_input',
+                    key='chat_input',
                     accept_file=True,
-                    file_type=['pdf'])
+                    file_type=['pdf'],
+                    on_submit=handle_chat_input)
     with colGraph:
         with st.container():
             if agraph_clicked := get_agraph(graph_id=st.session_state.user_id):

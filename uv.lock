@@ -666,6 +666,21 @@ wheels = [
 ]
 
 [[package]]
+name = "google-cloud-speech"
+version = "2.33.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "google-api-core", extra = ["grpc"] },
+    { name = "google-auth" },
+    { name = "proto-plus" },
+    { name = "protobuf" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/9a/74/9c5a556f8af19cab461058aa15e1409e7afa453ca2383473a24a12801ef7/google_cloud_speech-2.33.0.tar.gz", hash = "sha256:fd08511b5124fdaa768d71a4054e84a5d8eb02531cb6f84f311c0387ea1314ed", size = 389072, upload-time = "2025-06-11T23:56:37.231Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/12/1d/880342b2541b4bad888ad8ab2ac77d4b5dad25b32a2a1c5f21140c14c8e3/google_cloud_speech-2.33.0-py3-none-any.whl", hash = "sha256:4ba16c8517c24a6abcde877289b0f40b719090504bf06b1adea248198ccd50a5", size = 335681, upload-time = "2025-06-11T23:56:36.026Z" },
+]
+
+[[package]]
 name = "google-cloud-storage"
 version = "3.3.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1901,6 +1916,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "floggit" },
     { name = "google-cloud-secret-manager" },
+    { name = "google-cloud-speech" },
     { name = "google-cloud-storage" },
     { name = "pydantic" },
     { name = "python-dotenv" },
@@ -1918,6 +1934,7 @@ dependencies = [
 requires-dist = [
     { name = "floggit", specifier = ">=0.0.19" },
     { name = "google-cloud-secret-manager", specifier = ">=2.24.0" },
+    { name = "google-cloud-speech", specifier = ">=2.33.0" },
     { name = "google-cloud-storage", specifier = ">=3.3.0" },
     { name = "pydantic", specifier = ">=2.11.7" },
     { name = "python-dotenv", specifier = ">=1.1.1" },

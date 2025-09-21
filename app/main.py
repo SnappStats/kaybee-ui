@@ -9,16 +9,15 @@ from knowledge_graph_service import fetch_entity
 from stt import transcribe_audio
 
 def handle_chat_input():
-    st.session_state.user_input = {
-            'text': st.session_state.chat_input.text,
-            'files': st.session_state.chat_input.files
-    }
+    if text := st.session_state.chat_input.text:
+        st.session_state.user_input = {
+                'text': text,
+                'files': st.session_state.chat_input.files
+        }
 
 def handle_audio_input():
-    st.session_state.user_input = {
-            'text': transcribe_audio(st.session_state.audio_input.getvalue()),
-            'files': []
-    }
+    if text := transcribe_audio(st.session_state.audio_input.getvalue()):
+        st.session_state.user_input = {'text': text, 'files': []}
 
 if not os.path.exists('app/.streamlit/secrets.toml'):
     load_oauth_secrets()

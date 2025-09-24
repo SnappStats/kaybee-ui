@@ -88,7 +88,6 @@ with st.container(border=False):
     colAI, colGraph, colDetails = st.columns([1,2,1], border=True)
     with colAI:
         with st.container(height=500, border=False):
-            #st.write(' ')
             for message in st.session_state.messages:
                 if message['role'] == 'user':
                     with st.chat_message("user", avatar=USER_AVATAR):
@@ -110,6 +109,7 @@ with st.container(border=False):
                                 text=user_input['text'],
                                 files=user_input['files'])
                         format_response(agent_response)
+                st.session_state['user_input'] = None
 
         with st.container():
             if st.toggle('🎤', value=False):

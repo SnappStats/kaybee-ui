@@ -132,6 +132,8 @@ with st.container(border=False):
 
     with colDetails:
         if st.session_state.agraph_clicked:
-            st.json(fetch_entity(
+            entity = fetch_entity(
                     graph_id=st.session_state.user_id,
-                    entity_id=st.session_state.agraph_clicked))
+                    entity_id=st.session_state.agraph_clicked)
+            st.subheader(entity['entity_names'][0])
+            st.json(entity)

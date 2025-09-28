@@ -1,12 +1,17 @@
+import logging
 import json
 import os
 import streamlit as st
 import streamlit_mermaid as stmd
+from stt import transcribe_audio
+
 from oauth_secrets import main as load_oauth_secrets
-from agent_service import stream_agent_response
+from agent_service import stream_agent_response, create_session
 from agraph import get_agraph
 from knowledge_graph_service import fetch_entity
-from stt import transcribe_audio
+
+AI_AVATAR = 'app/splash.png'
+USER_AVATAR = '🧑'
 
 def handle_chat_input():
     if text := st.session_state.chat_input.text:
@@ -44,20 +49,19 @@ else:
             st.login('google')
 
 if 'session_id' not in st.session_state:
-    from agent_service import create_session
-    st.session_state.session_id = create_session(
-            st.session_state.user_id, company)
-
+    try:
+        st.session_state.session_id = create_session(
+                st.session_state.user_id, company)
+    except Exception as e:
+        logging.error(f"Error creating session: {e}")
+        st.write('Broken, sorry.')
+        st.stop()
 
 if 'agraph_clicked' not in st.session_state:
     st.session_state.agraph_clicked = None
 
 # --- Main Application UI ---
 st.markdown('<h1 style="margin-top: 0rem; padding-top: 0rem">Tribal Knowledge Base</h1>', unsafe_allow_html=True)
-
-AI_AVATAR = 'app/splash.png'
-USER_AVATAR = '🧑'
-
 
 def format_response(snippet: dict):
     for item in snippet:
@@ -103,11 +107,16 @@ with st.container(border=False):
                         {"role": "user", "content": user_input['text']})
                 with st.chat_message("assistant", avatar=AI_AVATAR):
                     with st.spinner("Thinking..."):
-                        agent_response = stream_agent_response(
-                                user_id=st.session_state.user_id,
-                                session_id=st.session_state.session_id,
-                                text=user_input['text'],
-                                files=user_input['files'])
+                        try:
+                            agent_response = stream_agent_response(
+                                    user_id=st.session_state.user_id,
+                                    session_id=st.session_state.session_id,
+                                    text=user_input['text'],
+                                    files=user_input['files'])
+                        except Exception as e:
+                            logging.error(f"Error in agent response: {e}")
+                            st.error("Sorry, the session is stale.")
+                            st.stop()
                         format_response(agent_response)
                 st.session_state['user_input'] = None
 

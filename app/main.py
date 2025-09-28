@@ -43,7 +43,7 @@ if getattr(st.user, 'is_logged_in', False):
             st.logout()
 else:
     st.session_state.user_id = 'anonymous'
-    company = 'Anonymous'
+    company = 'AYSO'
     with st.sidebar:
         if st.button("Log in with Google"):
             st.login('google')

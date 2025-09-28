@@ -51,5 +51,5 @@ def stream_agent_response(
 @flog
 def create_session(user_id: str, company: str) -> str:
     url = f'{AGENT_URL}/apps/{APP_NAME}/users/{user_id}/sessions'
-    response = requests.post(url, json={"company": company})
+    response = requests.post(url, json={"state": {"company": company}})
     return response.json()['id']

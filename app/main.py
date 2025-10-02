@@ -136,8 +136,8 @@ with st.container(border=False):
                     on_submit=handle_chat_input)
     with colGraph:
         with st.container():
-            if agraph_clicked := get_agraph(graph_id=st.session_state.user_id):
-                st.session_state.agraph_clicked = agraph_clicked
+            st.button('⟳')
+            st.session_state.agraph_clicked = get_agraph(graph_id=st.session_state.user_id)
 
     with colDetails:
         if st.session_state.agraph_clicked:

@@ -62,6 +62,7 @@ if 'agraph_clicked' not in st.session_state:
 
 # --- Main Application UI ---
 st.markdown('<h1 style="margin-top: 0rem; padding-top: 0rem">Tribal Knowledge Base</h1>', unsafe_allow_html=True)
+st.write('Watch the knowledge graph evolve as you type, speak, or upload documents.')
 
 def format_response(snippet: dict):
     for item in snippet:
@@ -129,14 +130,14 @@ with st.container(border=False):
                     key='audio_input')
             else:
                 st.chat_input(
-                    'Teach me something...',
+                    'Discuss any topic...',
                     key='chat_input',
                     accept_file=True,
                     file_type=['pdf'],
                     on_submit=handle_chat_input)
     with colGraph:
         with st.container():
-            st.button('⟳')
+            st.button('⟳ Refresh after ~30s to see updates')
             st.session_state.agraph_clicked = get_agraph(graph_id=st.session_state.user_id)
 
     with colDetails:

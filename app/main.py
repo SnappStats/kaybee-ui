@@ -36,7 +36,10 @@ st.logo('app/bee.png', size='large', link=None)
 # --- User and Session Management ---
 if getattr(st.user, 'is_logged_in', False):
     st.session_state.user_id = st.user.sub
-    st.session_state.graph_id = 'cf460c59-6b2e-42d3-b08d-b20ff54deb57'
+    if st.user.hd == 'snappstats.com':
+        st.session_state.graph_id = 'cf460c59-6b2e-42d3-b08d-b20ff54deb57'
+    else:
+        st.session_state.graph_id = st.user.sub
     with st.sidebar:
         st.write(f"Hello, {st.user.name}!")
         if st.button("Log out"):
@@ -144,7 +147,7 @@ with st.container(border=False):
     with colDetails:
         if st.session_state.agraph_clicked:
             entity = fetch_entity(
-                    graph_id=st.session_state.user_id,
+                    graph_id=st.session_state.graph_id,
                     entity_id=st.session_state.agraph_clicked)
             st.subheader(entity['entity_names'][0])
             st.json(entity)

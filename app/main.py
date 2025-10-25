@@ -36,14 +36,14 @@ st.logo('app/bee.png', size='large', link=None)
 # --- User and Session Management ---
 if getattr(st.user, 'is_logged_in', False):
     st.session_state.user_id = st.user.sub
-    company = 'Apple' # Assuming logged-in users are from Apple
+    st.session_state.graph_id = 'cf460c59-6b2e-42d3-b08d-b20ff54deb57'
     with st.sidebar:
         st.write(f"Hello, {st.user.name}!")
         if st.button("Log out"):
             st.logout()
 else:
     st.session_state.user_id = 'anonymous'
-    company = 'AYSO'
+    st.session_state.graph_id = 'anonymous'
     with st.sidebar:
         if st.button("Log in with Google"):
             st.login('google')
@@ -51,7 +51,8 @@ else:
 if 'session_id' not in st.session_state:
     try:
         st.session_state.session_id = create_session(
-                st.session_state.user_id, company)
+                user_id=st.session_state.user_id,
+                graph_id=st.session_state.graph_id)
     except Exception as e:
         logging.error(f"Error creating session: {e}")
         st.write('Broken, sorry.')
@@ -138,7 +139,7 @@ with st.container(border=False):
     with colGraph:
         with st.container():
             st.button('⟳ Refresh after ~30s to see updates')
-            st.session_state.agraph_clicked = get_agraph(graph_id=st.session_state.user_id)
+            st.session_state.agraph_clicked = get_agraph(graph_id=st.session_state.graph_id)
 
     with colDetails:
         if st.session_state.agraph_clicked:
